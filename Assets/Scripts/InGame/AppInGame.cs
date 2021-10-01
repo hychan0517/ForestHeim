@@ -23,8 +23,15 @@ public class AppInGame : MonoBehaviour
 	}
 	#endregion
 
+	private PlayerController _playerController;
 	private Canvas _mainCanvas;
 	private InGameUI _inGameUI;
+
+	private void Awake()
+	{
+		_playerController = FindObjectOfType<PlayerController>();
+	}
+
 	public Canvas GetCanvas()
 	{
 		return _mainCanvas;

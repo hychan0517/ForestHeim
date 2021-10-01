@@ -12,7 +12,9 @@ namespace GlobalDefine
 {
 	static public class Define
 	{
-		public const int RANDOM_POOL_COUNT = 1024;
+        public const string TEXTURE_NAME = "_BaseMap";
+
+        public const int RANDOM_POOL_COUNT = 1024;
         public static WaitForEndOfFrame WAIT_FOR_END_OF_FRAME = new WaitForEndOfFrame();
         public static WaitForSeconds WAIT_FOR_SECONDS_ONE = new WaitForSeconds(1.0f);
         public static WaitForSeconds WAIT_FOR_SECONDS_TWO = new WaitForSeconds(2.0f);
