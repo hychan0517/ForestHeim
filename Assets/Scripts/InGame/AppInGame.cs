@@ -21,6 +21,11 @@ public class AppInGame : MonoBehaviour
 			return _instance;
 		}
 	}
+
+	public float GetPlayerSpeed()
+	{
+		return _playerController.GetPlayerSpeed();
+	}
 	#endregion
 
 	private PlayerController _playerController;

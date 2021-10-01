@@ -18,20 +18,25 @@ public class PlayerController : MonoBehaviour
     {
         if(Input.GetKey(KeyCode.LeftArrow))
         {
-            transform.position += Vector3.left * 0.05f;
+            transform.position += Vector3.left * 0.075f;
+            _playerSpeed = -2 * Time.deltaTime;
         }
         else if (Input.GetKey(KeyCode.RightArrow))
         {
-            transform.position += Vector3.right * 0.05f;
-            _playerSpeed = 
+            transform.position += Vector3.right * 0.075f;
+            _playerSpeed = 2 * Time.deltaTime;
         }
+        else
+		{
+            _playerSpeed = 0;
+		}
     }
     private void Update()
     {
         if (Input.GetKey(KeyCode.Space) && IsGround())
         {
             _rigidbody.velocity = Vector3.zero;
-            _rigidbody.AddForce(new Vector3(0, 300, 0));
+            _rigidbody.AddForce(new Vector3(0, 400, 0));
             StartCoroutine(Co_JumpDelay());
         }
     }
@@ -65,4 +70,9 @@ public class PlayerController : MonoBehaviour
             return false;
         }
     }
+
+    public float GetPlayerSpeed()
+	{
+        return _playerSpeed;
+	}
 }

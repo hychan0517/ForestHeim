@@ -310,7 +310,7 @@ namespace GlobalDefine
                         isError = true;
                         strError = "FileRead www is null";
                     }
-                    else if (www.isNetworkError || www.isHttpError)
+                    else if (string.IsNullOrWhiteSpace(www.error) == false)
                     {
                         isError = true;
                         strError = www.error;
