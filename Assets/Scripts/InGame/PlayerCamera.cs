@@ -16,12 +16,14 @@ public class PlayerCamera : MonoBehaviour
 
 	private float _deltaTime;
 
-	//private Vector3 _last
+	private Vector3 _lastCameraPosition;
+	private float _moveSpeed;
 
 	private void Awake()
 	{
 		_originCameraPosition = transform.position - _player.transform.position;
 		_startMovePosition = transform.position;
+		_lastCameraPosition = transform.position;
 		StartCoroutine(Co_UpdatePlayerPosition());
 	}
 	private void LateUpdate()
@@ -29,6 +31,8 @@ public class PlayerCamera : MonoBehaviour
 		_deltaTime += Time.deltaTime;
 		float rate = _deltaTime * (1 / UPDATE_DURATION);
 		transform.position = new Vector3(_startMovePosition.x + (_cameraMoveDirection.x * rate), _startMovePosition.y + (_cameraMoveDirection.y * rate), _startMovePosition.z + (_cameraMoveDirection.z * rate));
+		_moveSpeed = transform.position.x - _lastCameraPosition.x;
+		_lastCameraPosition = transform.position;
 	}
 
 	private IEnumerator Co_UpdatePlayerPosition()
@@ -47,5 +51,10 @@ public class PlayerCamera : MonoBehaviour
 			_cameraMoveDirection = new Vector3(_targetPosition.x - _startMovePosition.x, _targetPosition.y - _startMovePosition.y, _targetPosition.z - _startMovePosition.z);
 			_deltaTime = 0;
 		}
+	}
+
+	public float GetPlayerSpeed()
+	{
+		return _moveSpeed;
 	}
 }

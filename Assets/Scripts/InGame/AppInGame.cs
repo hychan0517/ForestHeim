@@ -21,20 +21,22 @@ public class AppInGame : MonoBehaviour
 			return _instance;
 		}
 	}
-
-	public float GetPlayerSpeed()
-	{
-		return _playerController.GetPlayerSpeed();
-	}
 	#endregion
 
 	private PlayerController _playerController;
+	private PlayerCamera _playerCamera;
 	private Canvas _mainCanvas;
 	private InGameUI _inGameUI;
 
 	private void Awake()
 	{
 		_playerController = FindObjectOfType<PlayerController>();
+		_playerCamera = FindObjectOfType<PlayerCamera>();
+	}
+
+	public float GetPlayerSpeed()
+	{
+		return _playerCamera.GetPlayerSpeed();
 	}
 
 	public Canvas GetCanvas()
