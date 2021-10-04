@@ -7,37 +7,49 @@ public class PlayerController : MonoBehaviour
     private Rigidbody _rigidbody;
     private RaycastHit[] hits = new RaycastHit[10];
     private bool _isGround;
-    //private bool _isRight;
+	private bool _isLeftWall;
+    private bool _isRightWall;
 
-    private void Awake()
+    //Move
+    private Vector3 _moveDir;
+	//private bool _isRight;
+
+	private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
         _isGround = true;
     }
+
 	private void FixedUpdate()
 	{
-		
-	}
+        
+    }
 
 	private void Update()
     {
         if (Input.GetKey(KeyCode.LeftArrow))
         {
-            transform.position += Vector3.left * 0.075f;
+            if (_isLeftWall == false)
+            {
+                transform.position += Vector3.left * 5f * Time.deltaTime;
+            }
             //_isRight = false;
         }
         else if (Input.GetKey(KeyCode.RightArrow))
         {
-            transform.position += Vector3.right * 0.075f;
+            if (_isRightWall == false)
+            {
+                transform.position += Vector3.right * 5f * Time.deltaTime;
+            }
             //_isRight = true;
         }
-        
+
         if (Input.GetKey(KeyCode.Space))
         {
             if (IsGround())
             {
                 _rigidbody.velocity = Vector3.zero;
-                _rigidbody.AddForce(new Vector3(0, 400, 0));
+                _rigidbody.AddForce(new Vector3(0, 1000, 0));
                 StartCoroutine(Co_JumpDelay());
             }
     //        else if (_isGround)
@@ -85,6 +97,30 @@ public class PlayerController : MonoBehaviour
                 }
             }
             return false;
+        }
+    }
+
+	private void OnTriggerEnter(Collider other)
+	{
+        if (other.CompareTag("LeftWall"))
+        {
+            _isLeftWall = true;
+        }
+        if (other.CompareTag("RightWall"))
+        {
+            _isRightWall = true;
+        }
+    }
+
+	private void OnTriggerExit(Collider other)
+	{
+        if (other.CompareTag("LeftWall"))
+        {
+            _isLeftWall = false;
+        }
+        if (other.CompareTag("RightWall"))
+        {
+            _isRightWall = false;
         }
     }
 }

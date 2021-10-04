@@ -11,13 +11,14 @@ public class PlayerCamera : MonoBehaviour
 	private Vector3 _startMovePosition;
 	private Vector3 _cameraMoveDirection;
 
-	private const float UPDATE_DURATION = 0.5f;
-	private readonly WaitForSeconds UPDATE_DURATION_YIELD = new WaitForSeconds(0.5f);
+	private const float UPDATE_DURATION = 0.3f;
+	private readonly WaitForSeconds UPDATE_DURATION_YIELD = new WaitForSeconds(0.3f);
+	private const float HEIGHT_RATE = 0.3f;
 
 	private float _deltaTime;
-
 	private Vector3 _lastCameraPosition;
 	private float _moveSpeed;
+	
 
 	private void Awake()
 	{
@@ -26,7 +27,8 @@ public class PlayerCamera : MonoBehaviour
 		_lastCameraPosition = transform.position;
 		StartCoroutine(Co_UpdatePlayerPosition());
 	}
-	private void LateUpdate()
+
+	private void Update()
 	{
 		_deltaTime += Time.deltaTime;
 		float rate = _deltaTime * (1 / UPDATE_DURATION);
@@ -48,7 +50,7 @@ public class PlayerCamera : MonoBehaviour
 				_targetPosition.x = 0;
 			}
 
-			_cameraMoveDirection = new Vector3(_targetPosition.x - _startMovePosition.x, _targetPosition.y - _startMovePosition.y, _targetPosition.z - _startMovePosition.z);
+			_cameraMoveDirection = new Vector3(_targetPosition.x - _startMovePosition.x, (_targetPosition.y - _startMovePosition.y) * HEIGHT_RATE, _targetPosition.z - _startMovePosition.z);
 			_deltaTime = 0;
 		}
 	}
