@@ -8,36 +8,55 @@ public class PlayerController : MonoBehaviour
     private RaycastHit[] hits = new RaycastHit[10];
     private bool _isGround;
     private float _playerSpeed;
+    //private bool _isRight;
 
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
         _isGround = true;
     }
-    private void FixedUpdate()
+
+    private void Update()
     {
-        if(Input.GetKey(KeyCode.LeftArrow))
+        if (Input.GetKey(KeyCode.LeftArrow))
         {
             transform.position += Vector3.left * 0.075f;
             _playerSpeed = -2 * Time.deltaTime;
+            //_isRight = false;
         }
         else if (Input.GetKey(KeyCode.RightArrow))
         {
             transform.position += Vector3.right * 0.075f;
             _playerSpeed = 2 * Time.deltaTime;
+            //_isRight = true;
         }
         else
-		{
-            _playerSpeed = 0;
-		}
-    }
-    private void Update()
-    {
-        if (Input.GetKey(KeyCode.Space) && IsGround())
         {
-            _rigidbody.velocity = Vector3.zero;
-            _rigidbody.AddForce(new Vector3(0, 400, 0));
-            StartCoroutine(Co_JumpDelay());
+            _playerSpeed = 0;
+        }
+        if (Input.GetKey(KeyCode.Space))
+        {
+            if (IsGround())
+            {
+                _rigidbody.velocity = Vector3.zero;
+                _rigidbody.AddForce(new Vector3(0, 400, 0));
+                StartCoroutine(Co_JumpDelay());
+            }
+    //        else if (_isGround)
+    //        {
+    //            if (_isRight)
+    //            {
+    //                _rigidbody.velocity = Vector3.zero;
+    //                _rigidbody.AddForce(new Vector3(200, 300, 0));
+    //            }
+    //            else
+				//{
+    //                _rigidbody.velocity = Vector3.zero;
+    //                _rigidbody.AddForce(new Vector3(-200, 300, 0));
+
+    //            }
+    //            StartCoroutine(Co_JumpDelay());
+    //        }
         }
     }
     
