@@ -43,4 +43,9 @@ public class AppInGame : MonoBehaviour
 	{
 		return _mainCanvas;
 	}
+
+	private void OnDisable()
+	{
+		DG.Tweening.DOTween.KillAll();
+	}
 }

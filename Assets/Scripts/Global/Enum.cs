@@ -8,4 +8,14 @@
         Loading,
         InGame,
     }
+
+	public enum eMoveGroundType
+	{
+        None,
+        Left,
+        Right,
+        Up,
+        Down,
+    }
+
 }

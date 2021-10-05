@@ -7,6 +7,8 @@ TagManager:
   - Ground
   - LeftWall
   - RightWall
+  - MoveGround
+  - OutLine
   layers:
   - Default
   - TransparentFX
