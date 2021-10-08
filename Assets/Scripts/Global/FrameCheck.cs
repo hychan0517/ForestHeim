@@ -1,11 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class FrameCheck_HYC : MonoBehaviour
+public class FrameCheck : MonoBehaviour
 {
-#if DEBUG_MODE
     private Text _textFPS;
     private float _fFrameSumDeltaTime = 0.0f;
     private int _iFrameDataCount = 0;
@@ -20,7 +17,6 @@ public class FrameCheck_HYC : MonoBehaviour
     void Update()
     {
         DisplayDebuggingFrameRate();
-        //DisplayDebuggingStartCount();
 
         if (Input.GetKeyDown(KeyCode.Q) || Input.touchCount > 3)
         {
@@ -56,10 +52,4 @@ public class FrameCheck_HYC : MonoBehaviour
                 _textFPS.text = "FPS:0.0,  Low:0.0,  Avg:0.0";
         }
     }
-#else
-    private void Awake()
-	{
-        Destroy(gameObject);
-	}
-#endif
 }

@@ -7,6 +7,8 @@ public class PlayerController : MonoBehaviour
     //Jump
     private Rigidbody _rigidbody;
     private RaycastHit[] hits = new RaycastHit[10];
+
+    private bool _isGround;
     private bool _isJump;
     private bool _isSecondsJump;
 
@@ -15,7 +17,8 @@ public class PlayerController : MonoBehaviour
     private bool _isRightWall;
 
     //Rotation
-    private Tween _rotationgTween;
+    private Coroutine _rotationgCor;
+    private const float ROTATIONG_RATE = 7.0f;
 
 	private void Awake()
     {
@@ -32,15 +35,23 @@ public class PlayerController : MonoBehaviour
             if (_isLeftWall == false)
             {
                 transform.position += Vector3.left * 5f * Time.deltaTime;
-                RotationLeft();
             }
+            if(IsRight())
+			{
+                StopRotationCor();
+                _rotationgCor = StartCoroutine(Co_RotationLeft());
+			}
         }
         else if (Input.GetKey(KeyCode.RightArrow))
         {
             if (_isRightWall == false)
             {
                 transform.position += Vector3.right * 5f * Time.deltaTime;
-                RotationRight();
+            }
+            if (IsLeft())
+            {
+                StopRotationCor();
+                _rotationgCor = StartCoroutine(Co_RotationRight());
             }
         }
 
@@ -62,22 +73,53 @@ public class PlayerController : MonoBehaviour
 		}
     }
 
-    private void RotationRight()
+    private IEnumerator Co_RotationRight()
 	{
-        transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z - 10f);
+        while (IsLeft())
+        {
+            transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z - ROTATIONG_RATE);
+            yield return null;
+        }
+        _rotationgCor = null;
     }
 
-    private void RotationLeft()
+    private IEnumerator Co_RotationLeft()
 	{
-        transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z + 10f);
+        while (IsRight())
+        {
+            transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z + ROTATIONG_RATE);
+            yield return null;
+        }
+        _rotationgCor = null;
     }
 
-    private void KillRotationTween()
-	{
-        if (_rotationgTween != null && _rotationgTween.active)
-            _rotationgTween.Kill();
-
+    private void StopRotationCor()
+    {
+        if (_rotationgCor != null)
+        {
+            StopCoroutine(_rotationgCor);
+            _rotationgCor = null;
+        }
     }
+
+    private bool IsLeft()
+	{
+        float targetDegree = transform.eulerAngles.y - ROTATIONG_RATE;
+        if ((targetDegree < -90 && targetDegree > -270) || (targetDegree > 90 && targetDegree < 270))
+            return true;
+        else
+            return false;
+	}
+
+    private bool IsRight()
+	{
+        float targetDegree = transform.eulerAngles.y + ROTATIONG_RATE;
+        if ((targetDegree > 90 && targetDegree < 270) || (targetDegree < -90 && targetDegree > -270))
+            return true;
+        else
+            return false;
+    }
+
     
     private IEnumerator Co_JumpDelay()
     {
@@ -88,6 +130,7 @@ public class PlayerController : MonoBehaviour
 
     private bool IsGround()
     {
+        return _isGround;
         Ray ray = new Ray(transform.position, Vector3.down);
         hits = new RaycastHit[10];
         //TODO : 레이어마스크와 Distance
@@ -136,15 +179,25 @@ public class PlayerController : MonoBehaviour
 	{
 		if(collision.collider.CompareTag("MoveGround"))
 		{
+            _isGround = true;
             transform.parent = collision.gameObject.transform;
 		}
+        else if(collision.collider.CompareTag("Ground"))
+		{
+            _isGround = true;
+        }
     }
 
 	private void OnCollisionExit(Collision collision)
 	{
         if (collision.collider.CompareTag("MoveGround") && collision.transform == transform.parent)
         {
+            _isGround = false;
             transform.parent = null;
+        }
+        else if (collision.collider.CompareTag("Ground"))
+        {
+            _isGround = false;
         }
     }
 }
