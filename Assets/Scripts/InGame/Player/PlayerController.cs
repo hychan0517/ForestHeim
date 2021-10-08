@@ -180,11 +180,13 @@ public class PlayerController : MonoBehaviour
 		if(collision.collider.CompareTag("MoveGround"))
 		{
             _isGround = true;
+            _isSecondsJump = false;
             transform.parent = collision.gameObject.transform;
 		}
         else if(collision.collider.CompareTag("Ground"))
 		{
             _isGround = true;
+            _isSecondsJump = false;
         }
     }
 
