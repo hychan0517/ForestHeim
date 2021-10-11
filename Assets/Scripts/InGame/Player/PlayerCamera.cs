@@ -45,7 +45,7 @@ public class PlayerCamera : MonoBehaviour
 			_startMovePosition = transform.position;
 			_targetPosition = _player.transform.position + _originCameraPosition;
 
-			if (_targetPosition.x <= 0)
+			if (_targetPosition.x <= -50)
 			{
 				_targetPosition.x = 0;
 			}

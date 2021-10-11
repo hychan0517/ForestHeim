@@ -77,7 +77,7 @@ public class PlayerController : MonoBehaviour
 	{
         while (IsLeft())
         {
-            transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z - ROTATIONG_RATE);
+            transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y - ROTATIONG_RATE, transform.eulerAngles.z);
             yield return null;
         }
         _rotationgCor = null;
@@ -87,7 +87,7 @@ public class PlayerController : MonoBehaviour
 	{
         while (IsRight())
         {
-            transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z + ROTATIONG_RATE);
+            transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y + ROTATIONG_RATE, transform.eulerAngles.z);
             yield return null;
         }
         _rotationgCor = null;
