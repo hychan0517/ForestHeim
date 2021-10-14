@@ -13,7 +13,7 @@ public class PlayerCamera : MonoBehaviour
 
 	private const float UPDATE_DURATION = 0.3f;
 	private readonly WaitForSeconds UPDATE_DURATION_YIELD = new WaitForSeconds(0.3f);
-	private const float HEIGHT_RATE = 0.3f;
+	private const float HEIGHT_RATE = 1f;
 
 	private float _deltaTime;
 	private Vector3 _lastCameraPosition;
@@ -32,7 +32,8 @@ public class PlayerCamera : MonoBehaviour
 	{
 		_deltaTime += Time.deltaTime;
 		float rate = _deltaTime * (1 / UPDATE_DURATION);
-		transform.position = new Vector3(_startMovePosition.x + (_cameraMoveDirection.x * rate), _startMovePosition.y + (_cameraMoveDirection.y * rate), _startMovePosition.z + (_cameraMoveDirection.z * rate));
+		//transform.position = new Vector3(_startMovePosition.x + (_cameraMoveDirection.x * rate), _startMovePosition.y + (_cameraMoveDirection.y * rate), _startMovePosition.z + (_cameraMoveDirection.z * rate));
+		transform.position = new Vector3(_startMovePosition.x + (_cameraMoveDirection.x * rate), _player.transform.position.y + _originCameraPosition.y, _startMovePosition.z + (_cameraMoveDirection.z * rate));
 		_moveSpeed = transform.position.x - _lastCameraPosition.x;
 		_lastCameraPosition = transform.position;
 	}

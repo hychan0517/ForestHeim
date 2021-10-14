@@ -8,8 +8,10 @@ public class PlayerController : MonoBehaviour
     private Rigidbody _rigidbody;
     private RaycastHit[] hits = new RaycastHit[10];
 
+    [SerializeField]
     private bool _isGround;
-    private bool _isJump;
+    private bool _isJump = true;
+    [SerializeField]
     private bool _isSecondsJump;
 
     //Move
@@ -23,28 +25,27 @@ public class PlayerController : MonoBehaviour
 	private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
-        _isJump = true;
     }
 
 
 	private void Update()
     {
-        IsGround();
         if (Input.GetKey(KeyCode.LeftArrow))
         {
             if (_isLeftWall == false)
             {
                 transform.position += Vector3.left * 5f * Time.deltaTime;
+                //CheckLeftUpGround();
             }
-            if(IsRight())
-			{
+            if (IsRight())
+            {
                 StopRotationCor();
                 _rotationgCor = StartCoroutine(Co_RotationLeft());
-			}
+            }
         }
         else if (Input.GetKey(KeyCode.RightArrow))
         {
-            if (_isRightWall == false)
+            if (_isRightWall)
             {
                 transform.position += Vector3.right * 5f * Time.deltaTime;
             }
@@ -55,20 +56,24 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        if (_isJump)
+            CheckDownGround();
+
         if (Input.GetKey(KeyCode.Space))
         {
-            if (_isJump && IsGround())
+            if (_isJump && _isGround)
             {
-                _rigidbody.velocity = Vector3.zero;
-                _rigidbody.AddForce(new Vector3(0, 1150, 0));
                 StartCoroutine(Co_JumpDelay());
+                _rigidbody.velocity = Vector3.zero;
+                _rigidbody.AddForce(new Vector3(0, 800, 0));
+                
             }
-            else if(IsGround() == false && _isJump && _isSecondsJump == false)
+            else if(_isGround == false && _isJump && _isSecondsJump == false)
 			{
+                StartCoroutine(Co_JumpDelay());
                 _isSecondsJump = true;
                 _rigidbody.velocity = Vector3.zero;
-                _rigidbody.AddForce(new Vector3(0, 1150, 0));
-                StartCoroutine(Co_JumpDelay());
+                _rigidbody.AddForce(new Vector3(0, 800, 0));
             }
 		}
     }
@@ -124,26 +129,35 @@ public class PlayerController : MonoBehaviour
     private IEnumerator Co_JumpDelay()
     {
         _isJump = false;
+        _rigidbody.isKinematic = false;
+        _isGround = false;
         yield return new WaitForSeconds(0.3f);
         _isJump = true;
     }
 
-    private bool IsGround()
+    private void CheckDownGround()
     {
-        return _isGround;
         Ray ray = new Ray(transform.position, Vector3.down);
         hits = new RaycastHit[10];
-        //TODO : 레이어마스크와 Distance
-        Physics.RaycastNonAlloc(ray, hits, 0.3f);
+        Physics.RaycastNonAlloc(ray, hits, 1f);
         foreach (RaycastHit i in hits)
         {
             if (i.collider && (i.collider.CompareTag("Ground") || i.collider.CompareTag("MoveGround")))
             {
-                _isSecondsJump = false;
-                return true;
+                float distance = transform.position.y - i.point.y;
+                if (distance >= 0f && distance <= 0.2f)
+                {
+                    transform.position = new Vector3(transform.position.x, i.point.y + 0.1f, transform.position.z);
+                    _isGround = true;
+                    _isSecondsJump = false;
+                    _rigidbody.isKinematic = true;
+                    return;
+                }
             }
         }
-        return false;
+
+        _isGround = false;
+        _rigidbody.isKinematic = false;
     }
 
 	private void OnTriggerEnter(Collider other)
@@ -179,27 +193,15 @@ public class PlayerController : MonoBehaviour
 	{
 		if(collision.collider.CompareTag("MoveGround"))
 		{
-            _isGround = true;
-            _isSecondsJump = false;
             transform.parent = collision.gameObject.transform;
 		}
-        else if(collision.collider.CompareTag("Ground"))
-		{
-            _isGround = true;
-            _isSecondsJump = false;
-        }
     }
 
 	private void OnCollisionExit(Collision collision)
 	{
         if (collision.collider.CompareTag("MoveGround") && collision.transform == transform.parent)
         {
-            _isGround = false;
             transform.parent = null;
-        }
-        else if (collision.collider.CompareTag("Ground"))
-        {
-            _isGround = false;
         }
     }
 }
