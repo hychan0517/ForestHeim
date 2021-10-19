@@ -22,6 +22,11 @@ public class PlayerController : MonoBehaviour
     private Coroutine _rotationgCor;
     private const float ROTATIONG_RATE = 7.0f;
 
+    //Up
+    private GameObject _ladderObject;
+    private bool _isLadder = false;
+
+
 	private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
@@ -30,12 +35,11 @@ public class PlayerController : MonoBehaviour
 
 	private void Update()
     {
-        if (Input.GetKey(KeyCode.LeftArrow))
+        if (Input.GetKey(KeyCode.LeftArrow) && _isLadder == false)
         {
             if (_isLeftWall == false)
             {
                 transform.position += Vector3.left * 5f * Time.deltaTime;
-                //CheckLeftUpGround();
             }
             if (IsRight())
             {
@@ -43,9 +47,9 @@ public class PlayerController : MonoBehaviour
                 _rotationgCor = StartCoroutine(Co_RotationLeft());
             }
         }
-        else if (Input.GetKey(KeyCode.RightArrow))
+        else if (Input.GetKey(KeyCode.RightArrow) && _isLadder == false)
         {
-            if (_isRightWall)
+            if (_isRightWall == false)
             {
                 transform.position += Vector3.right * 5f * Time.deltaTime;
             }
@@ -56,10 +60,10 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (_isJump)
+        if (_isJump && _isLadder == false)
             CheckDownGround();
 
-        if (Input.GetKey(KeyCode.Space))
+        if (Input.GetKey(KeyCode.Space) && _isLadder == false)
         {
             if (_isJump && _isGround)
             {
@@ -76,6 +80,23 @@ public class PlayerController : MonoBehaviour
                 _rigidbody.AddForce(new Vector3(0, 800, 0));
             }
 		}
+
+
+        //Ladder
+        if(Input.GetKey(KeyCode.UpArrow) && _isLadder == false && _ladderObject != null)
+        {
+            _isLadder = true;
+            transform.position = new Vector3(_ladderObject.transform.position.x, transform.position.y, transform.position.z);
+            SetGroundState();
+        }
+        if(Input.GetKey(KeyCode.UpArrow) && _isLadder && _ladderObject)
+        {
+            transform.position += Vector3.up * 5f * Time.deltaTime;
+        }
+        if (Input.GetKey(KeyCode.DownArrow) && _isLadder && _ladderObject)
+        {
+            transform.position += Vector3.down * 5f * Time.deltaTime;
+        }
     }
 
     private IEnumerator Co_RotationRight()
@@ -148,9 +169,7 @@ public class PlayerController : MonoBehaviour
                 if (distance >= 0f && distance <= 0.2f)
                 {
                     transform.position = new Vector3(transform.position.x, i.point.y + 0.1f, transform.position.z);
-                    _isGround = true;
-                    _isSecondsJump = false;
-                    _rigidbody.isKinematic = true;
+                    SetGroundState();
                     return;
                 }
             }
@@ -158,6 +177,13 @@ public class PlayerController : MonoBehaviour
 
         _isGround = false;
         _rigidbody.isKinematic = false;
+    }
+
+    private void SetGroundState()
+    {
+        _isGround = true;
+        _isSecondsJump = false;
+        _rigidbody.isKinematic = true;
     }
 
 	private void OnTriggerEnter(Collider other)
@@ -175,6 +201,11 @@ public class PlayerController : MonoBehaviour
             LogManager.Instance.PrintLog(LogManager.eLogType.Normal, "Game End");
             UnityEngine.SceneManagement.SceneManager.LoadScene("InGame");
         }
+        else if (other.CompareTag("Ladder"))
+        {
+            if (_ladderObject == null)
+                _ladderObject = other.gameObject;
+        }
     }
 
 	private void OnTriggerExit(Collider other)
@@ -186,6 +217,10 @@ public class PlayerController : MonoBehaviour
         else if (other.CompareTag("RightWall"))
         {
             _isRightWall = false;
+        }
+        else if (other.CompareTag("Ladder") && other.gameObject == _ladderObject)
+        {
+            _ladderObject = null;
         }
     }
 
@@ -199,6 +234,10 @@ public class PlayerController : MonoBehaviour
 
 	private void OnCollisionExit(Collision collision)
 	{
+        if (collision.collider.CompareTag("MoveGround") && collision.transform == transform.parent)
+        {
+            transform.parent = null;
+        }
         if (collision.collider.CompareTag("MoveGround") && collision.transform == transform.parent)
         {
             transform.parent = null;

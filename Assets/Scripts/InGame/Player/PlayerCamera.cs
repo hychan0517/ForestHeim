@@ -18,7 +18,8 @@ public class PlayerCamera : MonoBehaviour
 	private float _deltaTime;
 	private Vector3 _lastCameraPosition;
 	private float _moveSpeed;
-	
+	//TODO : 속도에 따라 카메라 사이즈가 변경됨
+	//일정 거리 이상 중앙지점에서 벌어졌다면 애니메이션을 두지않음
 
 	private void Awake()
 	{
