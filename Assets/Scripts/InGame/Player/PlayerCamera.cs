@@ -45,12 +45,19 @@ public class PlayerCamera : MonoBehaviour
 		_deltaTime += Time.deltaTime;
 		float rate = _deltaTime * (1 / UPDATE_DURATION);
 
-		if (Mathf.Abs(transform.position.y - _player.transform.position.y) >= 4 && _player._isGround == false)
+		if (transform.position.y - _player.transform.position.y >= 6 && _player._isGround == false)
 		{
 			if (_isAuto == false)
 				Debug.Log("AUTO");
 			_isAuto = true;
-			transform.position = new Vector3(_startMovePosition.x + (_cameraMoveDirection.x * rate), _player.transform.position.y + 4, _startMovePosition.z + (_cameraMoveDirection.z * rate));
+			transform.position = new Vector3(_startMovePosition.x + (_cameraMoveDirection.x * rate), _player.transform.position.y + 6, _startMovePosition.z + (_cameraMoveDirection.z * rate));
+		}
+		else if (transform.position.y - _player.transform.position.y <= -5 && _player._isGround == false)
+		{
+			if (_isAuto == false)
+				Debug.Log("AUTO");
+			_isAuto = true;
+			transform.position = new Vector3(_startMovePosition.x + (_cameraMoveDirection.x * rate), _player.transform.position.y - 5, _startMovePosition.z + (_cameraMoveDirection.z * rate));
 		}
 		else
 		{
