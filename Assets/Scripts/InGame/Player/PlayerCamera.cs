@@ -17,6 +17,7 @@ public class PlayerCamera : MonoBehaviour
 	private float _cameraMoveSpeed;
 	private float _playerMoveSpeed;
 	private bool _isAuto;
+	private float _zoomInOutValue;
 	
 
 	private const float UPDATE_DURATION = 0.4f;
@@ -61,14 +62,14 @@ public class PlayerCamera : MonoBehaviour
 			}
 			else
 			{
-				transform.position = new Vector3(_startMovePosition.x + (_cameraMoveDirection.x * rate), _startMovePosition.y + (_cameraMoveDirection.y * rate), _startMovePosition.z + (_cameraMoveDirection.z * rate));
+				transform.position = new Vector3(_startMovePosition.x + (_cameraMoveDirection.x * rate), _startMovePosition.y + (_cameraMoveDirection.y * rate / 2), _startMovePosition.z + (_cameraMoveDirection.z * rate));
 			}
 		}
 
-		transform.position = new Vector3(_startMovePosition.x + (_cameraMoveDirection.x * rate), _startMovePosition.y + (_cameraMoveDirection.y * rate), _startMovePosition.z + (_cameraMoveDirection.z * rate));
+		//transform.position = new Vector3(_startMovePosition.x + (_cameraMoveDirection.x * rate), _startMovePosition.y + (_cameraMoveDirection.y * rate), _startMovePosition.z + (_cameraMoveDirection.z * rate));
 		_cameraMoveSpeed = transform.position.x - _lastCameraPosition.x;
 		_lastCameraPosition = transform.position;
-		_playerMoveSpeed = (_player.transform.position - _lastPlayerPosition).sqrMagnitude;
+		_playerMoveSpeed = Mathf.Abs(_player.transform.position.x - _lastPlayerPosition.x);
 		_lastPlayerPosition = _player.transform.position;
 	}
 
@@ -84,7 +85,7 @@ public class PlayerCamera : MonoBehaviour
 	private void UpdateCameraPosition()
 	{
 		_startMovePosition = transform.position;
-		_targetPosition = _player.transform.position + _originCameraPosition;
+		_targetPosition = _player.transform.position + _originCameraPosition + Vector3.forward * _zoomInOutValue;
 
 		_cameraMoveDirection = new Vector3(_targetPosition.x - _startMovePosition.x, (_targetPosition.y - _startMovePosition.y) * HEIGHT_RATE, _targetPosition.z - _startMovePosition.z);
 		_deltaTime = 0;
@@ -97,13 +98,17 @@ public class PlayerCamera : MonoBehaviour
 			yield return null;
 			if(_playerMoveSpeed > 0)
 			{
-				if (_camera.fieldOfView <= 22)
-					_camera.fieldOfView += Time.deltaTime * 2f;
+				if (_zoomInOutValue > -15)
+					_zoomInOutValue -= Time.deltaTime * 7.5f;
+				else
+					_zoomInOutValue = -15f;
 			}
 			else
 			{
-				if (_camera.fieldOfView >= 18)
-					_camera.fieldOfView -= Time.deltaTime * 2f;
+				if (_zoomInOutValue < 0)
+					_zoomInOutValue += Time.deltaTime * 7.5f;
+				else
+					_zoomInOutValue = 0;
 			}
 		}
 	}
