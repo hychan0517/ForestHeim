@@ -25,7 +25,7 @@ public class PlayerController : MonoBehaviour
     private GameObject _ladderObject;
     private bool _isLadder = false;
 
-    private const float MOVE_SPEED = 10f;
+    private const float MOVE_SPEED = 4f;
 
 	private void Awake()
     {
@@ -175,6 +175,40 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        ray = new Ray(transform.position + Vector3.left * 0.3f, Vector3.down);
+        hits = new RaycastHit[10];
+        Physics.RaycastNonAlloc(ray, hits, 1f);
+        foreach (RaycastHit i in hits)
+        {
+            if (i.collider && (i.collider.CompareTag("Ground") || i.collider.CompareTag("MoveGround")))
+            {
+                float distance = transform.position.y - i.point.y;
+                if (distance >= 0f && distance <= 0.2f)
+                {
+                    transform.position = new Vector3(transform.position.x, i.point.y + 0.1f, transform.position.z);
+                    SetGroundState();
+                    return;
+                }
+            }
+        }
+
+        ray = new Ray(transform.position + Vector3.right * 0.3f, Vector3.down);
+        hits = new RaycastHit[10];
+        Physics.RaycastNonAlloc(ray, hits, 1f);
+        foreach (RaycastHit i in hits)
+        {
+            if (i.collider && (i.collider.CompareTag("Ground") || i.collider.CompareTag("MoveGround")))
+            {
+                float distance = transform.position.y - i.point.y;
+                if (distance >= 0f && distance <= 0.2f)
+                {
+                    transform.position = new Vector3(transform.position.x, i.point.y + 0.1f, transform.position.z);
+                    SetGroundState();
+                    return;
+                }
+            }
+        }
+
         _isGround = false;
         _rigidbody.isKinematic = false;
     }
@@ -218,10 +252,10 @@ public class PlayerController : MonoBehaviour
         {
             _isRightWall = false;
         }
-        else if (other.CompareTag("Ladder") && other.gameObject == _ladderObject)
-        {
-            _ladderObject = null;
-        }
+        //else if (other.CompareTag("Ladder") && other.gameObject == _ladderObject)
+        //{
+        //    _ladderObject = null;
+        //}
     }
 
 	private void OnCollisionEnter(Collision collision)
@@ -234,10 +268,6 @@ public class PlayerController : MonoBehaviour
 
 	private void OnCollisionExit(Collision collision)
 	{
-        if (collision.collider.CompareTag("MoveGround") && collision.transform == transform.parent)
-        {
-            transform.parent = null;
-        }
         if (collision.collider.CompareTag("MoveGround") && collision.transform == transform.parent)
         {
             transform.parent = null;

@@ -16,6 +16,7 @@ public class PlayerCamera : MonoBehaviour
 	private float _deltaTime;
 	private float _cameraMoveSpeed;
 	private float _playerMoveSpeed;
+	private bool _isAuto;
 	
 
 	private const float UPDATE_DURATION = 0.4f;
@@ -45,12 +46,26 @@ public class PlayerCamera : MonoBehaviour
 
 		if (Mathf.Abs(transform.position.y - _player.transform.position.y) >= 4 && _player._isGround == false)
 		{
+			if (_isAuto == false)
+				Debug.Log("AUTO");
+			_isAuto = true;
 			transform.position = new Vector3(_startMovePosition.x + (_cameraMoveDirection.x * rate), _player.transform.position.y + 4, _startMovePosition.z + (_cameraMoveDirection.z * rate));
 		}
 		else
 		{
-			transform.position = new Vector3(_startMovePosition.x + (_cameraMoveDirection.x * rate), _startMovePosition.y + (_cameraMoveDirection.y * rate), _startMovePosition.z + (_cameraMoveDirection.z * rate));
+			if (_isAuto)
+			{
+				Debug.Log("AUTO FALSE");
+				_isAuto = false;
+				UpdateCameraPosition();
+			}
+			else
+			{
+				transform.position = new Vector3(_startMovePosition.x + (_cameraMoveDirection.x * rate), _startMovePosition.y + (_cameraMoveDirection.y * rate), _startMovePosition.z + (_cameraMoveDirection.z * rate));
+			}
 		}
+
+		transform.position = new Vector3(_startMovePosition.x + (_cameraMoveDirection.x * rate), _startMovePosition.y + (_cameraMoveDirection.y * rate), _startMovePosition.z + (_cameraMoveDirection.z * rate));
 		_cameraMoveSpeed = transform.position.x - _lastCameraPosition.x;
 		_lastCameraPosition = transform.position;
 		_playerMoveSpeed = (_player.transform.position - _lastPlayerPosition).sqrMagnitude;
@@ -62,12 +77,17 @@ public class PlayerCamera : MonoBehaviour
 		while (true)
 		{
 			yield return UPDATE_DURATION_YIELD;
-			_startMovePosition = transform.position;
-			_targetPosition = _player.transform.position + _originCameraPosition;
-
-			_cameraMoveDirection = new Vector3(_targetPosition.x - _startMovePosition.x, (_targetPosition.y - _startMovePosition.y) * HEIGHT_RATE, _targetPosition.z - _startMovePosition.z);
-			_deltaTime = 0;
+			UpdateCameraPosition();
 		}
+	}
+
+	private void UpdateCameraPosition()
+	{
+		_startMovePosition = transform.position;
+		_targetPosition = _player.transform.position + _originCameraPosition;
+
+		_cameraMoveDirection = new Vector3(_targetPosition.x - _startMovePosition.x, (_targetPosition.y - _startMovePosition.y) * HEIGHT_RATE, _targetPosition.z - _startMovePosition.z);
+		_deltaTime = 0;
 	}
 
 	private IEnumerator Co_ZoomInOut()
@@ -77,13 +97,13 @@ public class PlayerCamera : MonoBehaviour
 			yield return null;
 			if(_playerMoveSpeed > 0)
 			{
-				if (_camera.orthographicSize <= 9)
-					_camera.orthographicSize += Time.deltaTime * 1.25f;
+				if (_camera.fieldOfView <= 22)
+					_camera.fieldOfView += Time.deltaTime * 2f;
 			}
 			else
 			{
-				if (_camera.orthographicSize >= 7)
-					_camera.orthographicSize -= Time.deltaTime * 1.25f;
+				if (_camera.fieldOfView >= 18)
+					_camera.fieldOfView -= Time.deltaTime * 2f;
 			}
 		}
 	}
