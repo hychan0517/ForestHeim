@@ -438,7 +438,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4752105b1a687c64aa7ecbd561176505, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _newOriginPos: {x: -0.375, y: 5.83, z: -10}
+  _newOriginPos: {x: -0.375, y: 5.33, z: -10}
 --- !u!65 &641168284
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1049,7 +1049,7 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 1
+  orthographic: 0
   orthographic size: 7
   m_Depth: 1
   m_CullingMask:
@@ -1125,7 +1125,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfa96fd0e3b68ba49b388db2f7544953, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _player: {fileID: 919132148638816799}
+  _player: {fileID: 919132148638816800}
 --- !u!54 &1754351898
 Rigidbody:
   m_ObjectHideFlags: 0

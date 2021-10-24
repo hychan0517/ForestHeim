@@ -8,8 +8,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody _rigidbody;
     private RaycastHit[] hits = new RaycastHit[10];
 
-    [SerializeField]
-    private bool _isGround;
+    public bool _isGround;
     private bool _isJump = true;
     [SerializeField]
     private bool _isSecondsJump;
