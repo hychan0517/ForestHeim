@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class PlayerCamera : MonoBehaviour
 {
+	private Camera _camera;
 	public GameObject _player;
 
 	/// <summary> 플레이어와 카메라 사이의 거리 </summary>
@@ -10,33 +11,44 @@ public class PlayerCamera : MonoBehaviour
 	private Vector3 _targetPosition;
 	private Vector3 _startMovePosition;
 	private Vector3 _cameraMoveDirection;
-
-	private const float UPDATE_DURATION = 0.3f;
-	private readonly WaitForSeconds UPDATE_DURATION_YIELD = new WaitForSeconds(0.3f);
-	private const float HEIGHT_RATE = 1f;
-
-	private float _deltaTime;
 	private Vector3 _lastCameraPosition;
-	private float _moveSpeed;
+	private Vector3 _lastPlayerPosition;
+	private float _deltaTime;
+	private float _cameraMoveSpeed;
+	private float _playerMoveSpeed;
+	
+
+	private const float UPDATE_DURATION = 0.2f;
+	private readonly WaitForSeconds UPDATE_DURATION_YIELD = new WaitForSeconds(0.2f);
+	private const float HEIGHT_RATE = 1f;
 	//TODO : 속도에 따라 카메라 사이즈가 변경됨
 	//일정 거리 이상 중앙지점에서 벌어졌다면 애니메이션을 두지않음
+	//특정 위치마다 originPos가 변경됨
+	//특정 위치마다 min,max xy값이 변경됨
+
 
 	private void Awake()
 	{
+		_camera = GetComponent<Camera>();
 		_originCameraPosition = transform.position - _player.transform.position;
+		_lastPlayerPosition = _player.transform.position;
 		_startMovePosition = transform.position;
 		_lastCameraPosition = transform.position;
 		StartCoroutine(Co_UpdatePlayerPosition());
+		StartCoroutine(Co_ZoomInOut());
 	}
 
 	private void Update()
 	{
 		_deltaTime += Time.deltaTime;
 		float rate = _deltaTime * (1 / UPDATE_DURATION);
-		//transform.position = new Vector3(_startMovePosition.x + (_cameraMoveDirection.x * rate), _startMovePosition.y + (_cameraMoveDirection.y * rate), _startMovePosition.z + (_cameraMoveDirection.z * rate));
-		transform.position = new Vector3(_startMovePosition.x + (_cameraMoveDirection.x * rate), _player.transform.position.y + _originCameraPosition.y, _startMovePosition.z + (_cameraMoveDirection.z * rate));
-		_moveSpeed = transform.position.x - _lastCameraPosition.x;
+
+		
+		transform.position = new Vector3(_startMovePosition.x + (_cameraMoveDirection.x * rate), _startMovePosition.y + (_cameraMoveDirection.y * rate), _startMovePosition.z + (_cameraMoveDirection.z * rate));
+		_cameraMoveSpeed = transform.position.x - _lastCameraPosition.x;
 		_lastCameraPosition = transform.position;
+		_playerMoveSpeed = (_player.transform.position - _lastPlayerPosition).sqrMagnitude;
+		_lastPlayerPosition = _player.transform.position;
 	}
 
 	private IEnumerator Co_UpdatePlayerPosition()
@@ -47,18 +59,45 @@ public class PlayerCamera : MonoBehaviour
 			_startMovePosition = transform.position;
 			_targetPosition = _player.transform.position + _originCameraPosition;
 
-			if (_targetPosition.x <= -50)
-			{
-				_targetPosition.x = 0;
-			}
-
 			_cameraMoveDirection = new Vector3(_targetPosition.x - _startMovePosition.x, (_targetPosition.y - _startMovePosition.y) * HEIGHT_RATE, _targetPosition.z - _startMovePosition.z);
 			_deltaTime = 0;
 		}
 	}
 
+	private IEnumerator Co_ZoomInOut()
+	{
+		while(true)
+		{
+			yield return null;
+			if(_playerMoveSpeed > 0)
+			{
+				if (_camera.orthographicSize <= 9)
+					_camera.orthographicSize += Time.deltaTime * 1.25f;
+			}
+			else
+			{
+				if (_camera.orthographicSize >= 7)
+					_camera.orthographicSize -= Time.deltaTime * 1.25f;
+			}
+		}
+	}
+
 	public float GetPlayerSpeed()
 	{
-		return _moveSpeed;
+		return _cameraMoveSpeed;
+	}
+
+	private void OnTriggerEnter(Collider other)
+	{
+		if(other.CompareTag("CameraChanger"))
+		{
+			_originCameraPosition = other.GetComponent<CameraChangePosition>()._newOriginPos;
+			LogManager.Instance.PrintLog(LogManager.eLogType.Normal, "New Origin Camera Position");
+		}
+	}
+
+	private void OnDestroy()
+	{
+		StopAllCoroutines();
 	}
 }

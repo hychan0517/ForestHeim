@@ -26,6 +26,7 @@ public class PlayerController : MonoBehaviour
     private GameObject _ladderObject;
     private bool _isLadder = false;
 
+    private const float MOVE_SPEED = 10f;
 
 	private void Awake()
     {
@@ -39,7 +40,7 @@ public class PlayerController : MonoBehaviour
         {
             if (_isLeftWall == false)
             {
-                transform.position += Vector3.left * 5f * Time.deltaTime;
+                transform.position += Vector3.left * MOVE_SPEED * Time.deltaTime;
             }
             if (IsRight())
             {
@@ -51,7 +52,7 @@ public class PlayerController : MonoBehaviour
         {
             if (_isRightWall == false)
             {
-                transform.position += Vector3.right * 5f * Time.deltaTime;
+                transform.position += Vector3.right * MOVE_SPEED * Time.deltaTime;
             }
             if (IsLeft())
             {
@@ -91,11 +92,11 @@ public class PlayerController : MonoBehaviour
         }
         if(Input.GetKey(KeyCode.UpArrow) && _isLadder && _ladderObject)
         {
-            transform.position += Vector3.up * 5f * Time.deltaTime;
+            transform.position += Vector3.up * MOVE_SPEED * Time.deltaTime;
         }
         if (Input.GetKey(KeyCode.DownArrow) && _isLadder && _ladderObject)
         {
-            transform.position += Vector3.down * 5f * Time.deltaTime;
+            transform.position += Vector3.down * MOVE_SPEED * Time.deltaTime;
         }
     }
 
